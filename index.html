@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Aurora Luxe Quiz</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 40px;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1e1e2f, #3a3a5a);
+      color: #fff;
+      text-align: center;
+      overflow-x: hidden;
+    }
+
+    h1 {
+      font-size: 3em;
+      margin-bottom: 30px;
+      color: #ffd700;
+      text-shadow: 0 0 15px #ffd700;
+      font-weight: 600;
+    }
+
+    .question-block {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      padding: 30px;
+      margin: 30px auto;
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+      max-width: 600px;
+      display: none;
+      animation: fadeIn 0.6s ease;
+    }
+
+    .question-block.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    p {
+      font-size: 1.4em;
+      margin-bottom: 20px;
+      color: #fdfdfd;
+    }
+
+    button {
+      padding: 12px 24px;
+      margin: 10px;
+      font-size: 16px;
+      background: linear-gradient(145deg, #ffd700, #ffcc00);
+      color: #000;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 10px #ffd700;
+    }
+
+    button:hover {
+      background: #ffcc00;
+      transform: scale(1.05);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    #score {
+      font-size: 2em;
+      margin-top: 20px;
+      color: #ffd700;
+      text-shadow: 0 0 10px #ffd700;
+      transition: transform 0.4s ease, opacity 0.4s ease;
+    }
+
+    .score-animate {
+      transform: translateY(-10px);
+      opacity: 0.7;
+    }
+
+    #progress-container {
+      width: 100%;
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+      margin-bottom: 20px;
+      height: 20px;
+      overflow: hidden;
+    }
+
+    #progress-bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #ffd700, #ffcc00);
+      border-radius: 10px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.6; }
+      100% { opacity: 1; }
+    }
+
+    .timer {
+      margin-top: 15px;
+      font-size: 1.2em;
+      color: #ffeb3b;
+    }
+
+    .feedback {
+      margin-top: 15px;
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+
+    .final-score {
+      font-size: 2em;
+      margin-top: 30px;
+      color: #ffd700;
+      animation: popUp 0.8s ease;
+    }
+
+    @keyframes popUp {
+      0% { transform: scale(0.5); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    #reset-btn {
+      background: transparent;
+      border: 2px solid #ffd700;
+      color: #ffd700;
+      font-size: 1em;
+      padding: 10px 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 10px #ffd700;
+    }
+
+    #reset-btn:hover {
+      background: #ffd700;
+      color: #000;
+      transform: rotate(-2deg) scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="progress-container">
+    <div id="progress-bar"></div>
+  </div>
+
+  <button id="reset-btn" onclick="resetQuiz()">🔁 Reset Quiz</button>
+  <div id="score">Score: 0</div>
+
+  <h1>👑 ROHITH Quiz</h1>
+
+  <div class="question-block active">
+    <p>Question 1: What is 2 + 2?</p>
+    <button onclick="checkAnswer(1, 4, this)">4</button>
+    <button onclick="checkAnswer(1, 5, this)">5</button>
+    <button onclick="checkAnswer(1, 6, this)">6</button>
+    <div class="timer">⏱ Time left: <span class="time">10</span>s</div>
+    <div class="feedback"></div>
+  </div>
+
+  <div class="question-block">
+    <p>Question 2: What is 3 + 2?</p>
+    <button onclick="checkAnswer(2, 4, this)">4</button>
+    <button onclick="checkAnswer(2, 5, this)">5</button>
+    <button onclick="checkAnswer(2, 6, this)">6</button>
+    <div class="timer">⏱ Time left: <span class="time">10</span>s</div>
+    <div class="feedback"></div>
+  </div>
+
+  <script>
+    let score = 0;
+    let currentQuestion = 0;
+    let timerInterval;
+
+    const correctAnswers = {
+      1: [4],
+      2: [5],
+    };
+
+    function startTimer() {
+      let block = document.querySelectorAll(".question-block")[currentQuestion];
+      let timeSpan = block.querySelector(".time");
+      let buttons = block.querySelectorAll("button");
+      let time = 10;
+
+      timerInterval = setInterval(() => {
+        time--;
+        timeSpan.textContent = time;
+        if (time === 0) {
+          clearInterval(timerInterval);
+          buttons.forEach(btn => btn.disabled = true);
+          block.querySelector(".timer").textContent = "⏰ Time's up!";
+          nextQuestion();
+        }
+      }, 1000);
+    }
+
+    function checkAnswer(QuestionNumber, answer, buttonElement) {
+      clearInterval(timerInterval);
+
+      let block = buttonElement.parentElement;
+      let feedbackDiv = block.querySelector(".feedback");
+      let questionButtons = block.querySelectorAll("button");
+
+      questionButtons.forEach(btn => {
+        btn.disabled = true;
+        btn.style.cursor = "default";
+      });
+
+      if (correctAnswers[QuestionNumber].includes(answer)) {
+        buttonElement.style.backgroundColor = "lightgreen";
+        score++;
+        feedbackDiv.textContent = "✅ Correct!";
+        feedbackDiv.style.color = "lightgreen";
+      } else {
+        buttonElement.style.backgroundColor = "lightcoral";
+        feedbackDiv.textContent = "❌ Incorrect!";
+        feedbackDiv.style.color = "lightcoral";
+      }
+
+      localStorage.setItem("studentScore", score);
+      let scoreEl = document.getElementById("score");
+      scoreEl.textContent = "Score: " + score;
+      scoreEl.classList.add("score-animate");
+      setTimeout(() => scoreEl.classList.remove("score-animate"), 300);
+
+      let totalQuestions = document.querySelectorAll(".question-block").length;
+      let progress = ((currentQuestion + 1) / totalQuestions) * 100;
+      document.getElementById("progress-bar").style.width = progress + "%";
+
+      setTimeout(nextQuestion, 1000);
+    }
+
+    function nextQuestion() {
+      let blocks = document.querySelectorAll(".question-block");
+      blocks[currentQuestion].classList.remove("active");
+      currentQuestion++;
+
+      if (currentQuestion < blocks.length) {
+        blocks[currentQuestion].classList.add("active");
+        startTimer();
+      } else {
+        document.body.insertAdjacentHTML("beforeend",
+          `<div class="final-score">🎉 Quiz complete! Your final score is: ${score}/${blocks.length}</div>`);
+      }
+    }
+
+    window.onload = function () {
+      let savedScore = localStorage.getItem("studentScore");
+      if (savedScore !== null) {
+        score = parseInt(savedScore);
+        document.getElementById("score").textContent = "Score: " + score;
+      }
+      startTimer();
+    };
+function resetQuiz() {
+  localStorage.removeItem("studentScore");
+  location.reload();
+}
+
+  </script>
+</body>
+</html>
