@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<!-- saved from url=(0069)file:///C:/Users/ADMIN/OneDrive/Documents/ROHITH%20PROGRAMS/quiz.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <title>My Quiz</title>
+ 
+<style>
+  body {
+    background: linear-gradient(to right, #667eea, #764ba2);
+    font-family: 'Segoe UI', sans-serif;
+    text-align: center;
+    padding: 30px;
+    color: #fff;
+  }
+  button {
+    padding: 12px 20px;
+    margin: 8px;
+    font-size: 16px;
+    background-color:#fff;
+ border: 2px solid #3498db;
+        cursor: pointer;
+transition: all 0.3s ease;
+
+  }
+h1{
+font-size:3.5em;
+margin-bottom:40px;
+color: #fdfdfd;
+text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+
+}
+
+p{
+font_size:1.2em;
+margin: 20px 0 10px;
+}
+
+button:hover {
+  background-color: #3498db;
+ color: white;
+transform:scale(1.05);
+}
+
+.question-block {
+ background-color: rgba(255,2055,255,0.1);
+border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 30px auto;
+    box-shadow:0 8px 20px rgba(5,0,0,0.2);
+max-width: 5000px;
+transition: transform 0.5s ease;
+    
+  }
+.question-block:hover{
+ transform: scale(1.02);
+}
+
+button:disabled{
+opacity:0.6;
+cursor: not-allowed;
+}
+ 
+#score{
+  font-size:1.5em;
+margin-top:30px;
+color:#fdfdfd;
+}
+
+p{
+font-size:1.4em;
+margin-bottom: 20px;
+color: #fdfdfd;
+}
+button{
+padding: 12px 24px;
+      margin: 10px;
+      font-size: 16px;
+      background-color: #fff;
+      border: 2px solid #3498db;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+
+
+</style>
+ </head>
+
+  <body>
+<button onclick="localStorage.removeItem(&#39;studentScore&#39;); location.reload();">Reset Score</button>
+<div id="score">Score: 0</div>
+    <h1>Welcome to My Quiz!</h1>
+<div class="question-block">
+    <p>Question 1: What is 2 + 2?</p>
+
+    
+    <!-- Buttons now call the function when clicked -->
+    <button onclick="checkAnswer(1,4,this)">4</button>
+    <button onclick="checkAnswer(1,5,this)">5</button>
+    <button onclick="checkAnswer(1,6,this)">6</button>
+ </div>
+<div class="question-block">
+<p>Question 2:what is 3+2?</p>
+
+  <!-- Buttons now call the function when clicked -->
+    <button onclick="checkAnswer(2, 4,this)">4</button>
+    <button onclick="checkAnswer(2, 5,this)">5</button>
+    <button onclick="checkAnswer(2, 6,this)">6</button>
+</div>
+
+    <script>
+let score =0;
+      function checkAnswer(QuestionNumber, answer,buttonElement) {
+        let correctAnswers = {
+         1: [4],
+         2: [5],
+
+};
+
+let questionButtons = buttonElement.parentElement.querySelectorAll("button");
+ questionButtons.forEach(btn => {btn.disabled = true;
+btn.style.cursor = "default";});
+
+        if (correctAnswers[QuestionNumber].includes(answer)) {
+           buttonElement.style.backgroundColor = "lightgreen";
+score++;
+          how("Yay! You're right!");
+        }
+ else {
+        buttonElement.style.backgroundColor = "lightcoral";
+
+          alert("Oops! Try again.");
+        }
+localStorage.setItem("studentScore",score);
+
+document.getElementById("score").textContent = "score: " + score;
+}
+ 
+ window.onload=function() {
+let savedScore = localStorage.getItem("studentScore");
+if (savedScore !== null){
+score = parseInt(savedScore);
+document.getElementById("score").textContent = "Score: " + score;
+}
+};
+    
+    </script>
+  
+</body></html>
