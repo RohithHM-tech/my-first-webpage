@@ -1,0 +1,39 @@
+ "#f87171";
+        feedbackDiv.textContent = "❌ Incorrect!";
+        feedbackDiv.style.color = "#f87171";
+      }
+
+      localStorage.setItem("studentScore", score);
+      document.getElementById("score").textContent = "Score: " + score;
+
+      let progress = ((currentQuestion + 1) / totalQuestions) * 100;
+      document.getElementById("progress-bar").style.width = progress + "%";
+
+      setTimeout(nextQuestion, 1000);
+    }
+
+    function nextQuestion() {
+      let blocks = document.querySelectorAll(".question-block");
+      blocks[currentQuestion].classList.remove("active");
+      currentQuestion++;
+
+      if (currentQuestion < blocks.length) {
+        blocks[currentQuestion].classList.add("active");
+        startTimer();
+      } else {
+        document.body.insertAdjacentHTML("beforeend", `<div style="font-size:1.5em; margin-top:20px; color:#22c55e;">🎉 Quiz complete! Your final score is: ${score}/${blocks.length}</div>`);
+      }
+    }
+
+    // Load default topic on first load
+    window.onload = function () {
+      let savedScore = localStorage.getItem("studentScore");
+      if (savedScore !== null) {
+        score = parseInt(savedScore);
+        document.getElementById("score").textContent = "Score: " + score;
+      }
+      loadQuestions("general");
+    };
+  </script>
+</body>
+</html>
